@@ -27,6 +27,8 @@ public:
     int check(int id, string password);                           // return 값 : nBalance(잔고) or 인증 실패(AUTHENTIFICATION_FAIL)
     int getAcctID() { return nID; }                               // 계좌 번호 읽어오기
     void close();
+    int deposit(int id, string password, int money);
+    int withdraw(int id, string password, int money); // Renamed from widraw to withdraw
 };
 
 #endif

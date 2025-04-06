@@ -21,12 +21,14 @@ public:
     ATMachine(int size, int balance, string password); // 계좌 배열크기, ATM 잔고, 관리자 암호 초기화
     ~ATMachine();
 
-    Account* findAndAuthAccount(int id, string password); // 객체 찾기 logic 함수
+    Account *findAndAuthAccount(int id, string password); // 계좌번호와 비밀번호에 맞는 객체를 반환하는 logic만 떼어 구현함
 
     void displayMenu();   // ATM 기능 선택 화면
     void createAccount(); // 계좌 개설
     void checkMoney();    // 계좌 조회
     void closeAccount();  // 계좌 해지
+    void depositMoney();  // 계좌 입금
+    void withdrawMoney(); // 계좌 출금
 };
 
 #endif

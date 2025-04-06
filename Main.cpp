@@ -13,7 +13,7 @@ int main()
     while (1)
     {
         atm.displayMenu(); // ui 띄우기
-        cout << "메뉴를 선택하세요: ";
+        cout << "메뉴를 선택하세요 (ex: 1, 2, ...) : ";
         cin >> select;
         cout << endl;
 
@@ -27,8 +27,15 @@ int main()
             break;
         case 3:
             atm.closeAccount();
+            break;
+        case 4:
+            atm.depositMoney();
+            break;
+        case 5:
+            atm.withdrawMoney();
+            break;
         case 9:
-            return 0; // 소멸자를 명시적으로 호출하면 double free 문제가 뜬다.
+            return 0;
         default:
             cout << "번호 확인 후 다시 입력하세요." << endl;
         }

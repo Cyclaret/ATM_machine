@@ -28,6 +28,8 @@ void ATMachine::displayMenu()
     cout << " 1. 계좌 개설\n"
          << "2. 계좌 조회\n"
          << "3. 계좌 해지\n"
+         << "4. 계좌 입금\n"
+         << "5. 계좌 출금\n"
          << "9. 업무 종료" << endl;
 }
 
@@ -47,7 +49,22 @@ void ATMachine::createAccount()
         random_device rd;
         mt19937 gen(rd());
         uniform_int_distribution<int> dist(200, 900);
-        int newAccountID = dist(gen);
+        int newAccountID;
+
+        do { // 계좌번호 생성 후, 같은 계좌번호 있으면 다시 생성
+            newAccountID = dist(gen);
+            int exist = 0; // 같은 계좌번호 존재 여부
+
+            for (int i = 0; i < nCurrentAccountNum; i++) { // 이미 생성된 계좌번호들과 대조
+                if (pAcctArray[i].getAcctID() == newAccountID) {
+                    exist = 1; // 중복이 있다면 for문을 종료
+                    break;
+                }
+            }
+            if (!exist) { // 중복이 아니라면 break;를 통해 do문을 종료함
+                break;
+            }
+        } while (1); // 처음 1회는 반드시 실행
 
         pAcctArray[nCurrentAccountNum].create(newAccountID, 0, name, password);
         nCurrentAccountNum++;
@@ -55,77 +72,11 @@ void ATMachine::createAccount()
     else
     { // 이미 배열이 다 찼으면 생성하지 않고 다시 main으로 돌아감
         cout << "더 계좌를 생성할 수 없습니다.";
+        return;
     }
 }
 
-// 아래 checkMoney()는 원본 checkMoney인데, 다른 함수에서 조회 logic이 겹치므로 logic 함수만 따로 빼서 구현하고, 다른 함수에서 걔를 리팩토링하는 방식으로 구현하는 것으로 수정.
-
-// void ATMachine::checkMoney()
-// { // 계좌번호 안맞는 경우에 예외처리
-//     int tempID;
-//     string tempPassword; // cin때문에 잠깐 쓰는 temp변수
-//     Account *targetAccount = nullptr;
-
-//     cout << "------  조회  ------" << endl;
-//     cout << "계좌번호 입력: ";
-//     cin >> tempID;
-//     cout << "비밀번호 입력: ";
-//     cin >> tempPassword;
-//     for (int i = 0; i < nCurrentAccountNum; i++)
-//     {
-//         if (pAcctArray[i].getAcctID() == tempID)
-//         {
-//             targetAccount = &pAcctArray[i]; // targetAccount에 i 위치를 기억하도록
-//             break;
-//         }
-//     }
-//     if (targetAccount == nullptr)
-//     {
-//         cout << "계좌번호가 맞지 않습니다." << endl;
-//         return;
-//     }
-
-//     // for 돌다가 맞는 객체 나오면 break 치고 객체에 맞는 check 호출
-//     int balance = targetAccount->check(tempID, tempPassword);
-//     if (balance == AUTHENTIFICATION_FAIL)
-//     {
-//         cout << "비밀번호가 맞지 않습니다." << endl;
-//     }
-//     else
-//     {
-//         cout << "현재 잔액 : " << balance << endl;
-//     }
-// }
-
-// 아래 checkMoney()는 targetAccount를 사용 안하고 check()를 2번 호출하는 방식. 동작은 똑같으나, 설계 관점상 자원 소모가 크고 가독성이 떨어짐. 설계 규칙에 안 맞음.
-
-// void ATMachine::checkMoney()
-// {
-//     int tempId, balance = -1;
-//     string tempPassword;
-
-//     cout << "------  조회  ------" << endl;
-//     cout << "계좌번호 입력: ";
-//     cin >> tempId;
-//     cout << "비밀번호 입력: ";
-//     cin >> tempPassword;
-
-//     for (int i = 0; i < nCurrentAccountNum; i++)
-//     {
-//         if (pAcctArray[i].check(tempId, tempPassword) != AUTHENTIFICATION_FAIL)
-//         {
-//             balance = pAcctArray[i].check(tempId, tempPassword);
-//             break;
-//         }
-//     }
-//     if (balance == -1)
-//     {
-//         cout << "계좌 또는 비밀번호가 맞지 않습니다." << endl;
-//         return;
-//     }
-//     cout << "현재 잔액 : " << balance << endl;
-// }
-
+// checkMoney(), closeAccount(), depositMoney(), withdrawMoney()에 공통적으로 사용하는, 계좌번호와 비밀번호를 받아 정확한 객체 위치를 반환하는 logic만 떼어 구현하였음
 Account *ATMachine::findAndAuthAccount(int id, string password)
 {
     for (int i = 0; i < nCurrentAccountNum; i++)
@@ -158,11 +109,6 @@ void ATMachine::checkMoney()
     cout << "현재 잔액 : " << account->check(tempId, tempPassword) << endl;
 }
 
-ATMachine::~ATMachine() // 소멸자를 만들어놓고 쓸 수가 없네. double free때문에
-{
-    delete[] pAcctArray;
-}
-
 void ATMachine::closeAccount()
 {
     int tempId;
@@ -178,6 +124,7 @@ void ATMachine::closeAccount()
     if (account == nullptr)
     {
         cout << "계좌번호 혹은 비밀번호가 맞지 않습니다." << endl;
+        return;
     }
     account->close(); // 잔액이 있으면 불가하다고 알려줌
     // 잔액 있는 경우의 예외처리 구간
@@ -204,4 +151,83 @@ void ATMachine::closeAccount()
         nCurrentAccountNum--; // 전체 생성된 게좌 수 하나 줄임
         cout << tempId << " 계좌가 해지되었습니다. 감사합니다." << endl;
     }
+}
+
+void ATMachine::depositMoney()
+{
+    int tempId, money, balance;
+    string tempPassword;
+
+    cout << "------  입금  ------" << endl;
+    cout << "계좌번호 입력: ";
+    cin >> tempId;
+    cout << "비밀번호 입력: ";
+    cin >> tempPassword;
+    cout << "입금액   입력: ";
+    cin >> money;
+
+    if (money <= 0)
+    {
+        cout << "정확한 입금액을 입력하세요.\n";
+        return;
+    }
+
+    Account *account = findAndAuthAccount(tempId, tempPassword);
+    if (account == nullptr)
+    {
+        cout << "계좌번호 혹은 비밀번호가 맞지 않습니다." << endl;
+        return;
+    }
+    balance = account->deposit(tempId, tempPassword, money);
+    nMachineBalance += money;
+    cout << "현재 잔액 : " << balance << endl
+         << "입금 완료" << endl;
+}
+
+void ATMachine::withdrawMoney()
+{
+    int tempId, money, balance;
+
+    string tempPassword;
+    cout << "------  출금  ------" << endl;
+    cout << "계좌번호 입력: ";
+    cin >> tempId;
+    cout << "비밀번호 입력: ";
+    cin >> tempPassword;
+    cout << "출금액   입력: ";
+    cin >> money;
+
+    if (money <= 0)
+    {
+        cout << "정확한 출금액을 입력하세요\n";
+        return;
+    }
+
+    Account *account = findAndAuthAccount(tempId, tempPassword);
+    if (account == nullptr)
+    {
+        cout << "계좌번호 혹은 비밀번호가 맞지 않습니다." << endl;
+        return;
+    }
+    if (money > nMachineBalance)
+    {
+        cout << "출금액이 ATM기기의 잔액보다 많습니다." << endl;
+        return;
+    }
+
+    balance = account->withdraw(tempId, tempPassword, money);
+    if (balance == -1)
+    {
+        cout << "계좌에 잔액이 부족합니다." << endl;
+        return;
+    }
+
+    nMachineBalance -= money;
+    cout << "현재 잔액 : " << balance << endl
+         << "출금 완료" << endl;
+}
+
+ATMachine::~ATMachine()
+{
+    delete[] pAcctArray;
 }
