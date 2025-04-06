@@ -41,7 +41,7 @@ Visual Studio에서 실행하려면 다음 단계를 따라주세요:
 ⚠️ 주의: Visual Studio는 `Makefile`을 사용하지 않습니다. 빌드는 IDE 내부 빌드 시스템을 사용합니다.
 
 ### Makefile과 README.md는 chatGPT의 도움으로 만들었습니다.
-교수님, 제가 makefile는 개념만 알고 있어서 위 2개는 gpt에게 요청했습니다. 코드에 영향이 가는 부분은 없습니다.
+makefile는 개념만 알고 있어서 위 2개는 gpt에게 요청했습니다. 코드에 영향이 가는 부분은 없습니다.
 
 ---
 
