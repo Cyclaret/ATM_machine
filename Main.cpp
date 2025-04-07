@@ -35,7 +35,7 @@ int main()
             atm.withdrawMoney();
             break;
         case 9:
-            return 0;
+            return 0; // main함수가 끝나며 선언했던 소멸자 호출됨
         default:
             cout << "번호 확인 후 다시 입력하세요." << endl;
         }

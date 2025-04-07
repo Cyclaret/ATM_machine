@@ -41,9 +41,9 @@ void ATMachine::createAccount()
     {
         cout << "------  개설  ------" << endl;
         cout << "이름 입력: ";
-        cin >> name;
+        getline(cin, name);
         cout << "암호 입력: ";
-        cin >> password;
+        getline(cin, password);
 
         // mt19937 방식으로 난수 생성 후 newAccountID에 저장하여 매개변수로 보냄
         random_device rd;
@@ -51,17 +51,21 @@ void ATMachine::createAccount()
         uniform_int_distribution<int> dist(200, 900);
         int newAccountID;
 
-        do { // 계좌번호 생성 후, 같은 계좌번호 있으면 다시 생성
+        do
+        { // 계좌번호 생성 후, 같은 계좌번호 있으면 다시 생성
             newAccountID = dist(gen);
             int exist = 0; // 같은 계좌번호 존재 여부
 
-            for (int i = 0; i < nCurrentAccountNum; i++) { // 이미 생성된 계좌번호들과 대조
-                if (pAcctArray[i].getAcctID() == newAccountID) {
+            for (int i = 0; i < nCurrentAccountNum; i++)
+            { // 이미 생성된 계좌번호들과 대조
+                if (pAcctArray[i].getAcctID() == newAccountID)
+                {
                     exist = 1; // 중복이 있다면 for문을 종료
                     break;
                 }
             }
-            if (!exist) { // 중복이 아니라면 break;를 통해 do문을 종료함
+            if (!exist)
+            { // 중복이 아니라면 break;를 통해 do문을 종료함
                 break;
             }
         } while (1); // 처음 1회는 반드시 실행
@@ -97,8 +101,9 @@ void ATMachine::checkMoney()
     cout << "------  조회  ------" << endl;
     cout << "계좌번호 입력: ";
     cin >> tempId;
+    cin.ignore(); // 입력으로 받은 Enter 제거
     cout << "비밀번호 입력: ";
-    cin >> tempPassword;
+    getline(cin, tempPassword);
 
     Account *account = findAndAuthAccount(tempId, tempPassword);
     if (account == nullptr)
@@ -117,8 +122,9 @@ void ATMachine::closeAccount()
     cout << "------  해지  ------" << endl;
     cout << "계좌번호 입력: ";
     cin >> tempId;
+    cin.ignore();
     cout << "비밀번호 입력: ";
-    cin >> tempPassword;
+    getline(cin, tempPassword);
 
     Account *account = findAndAuthAccount(tempId, tempPassword);
     if (account == nullptr)
@@ -126,15 +132,18 @@ void ATMachine::closeAccount()
         cout << "계좌번호 혹은 비밀번호가 맞지 않습니다." << endl;
         return;
     }
-    account->close(); // 잔액이 있으면 불가하다고 알려줌
-    // 잔액 있는 경우의 예외처리 구간
-    if (account->check(tempId, tempPassword) != 0)
+    int tempBalance = account->check(tempId, tempPassword); // 초기화하기 전 잔액 잠시 보관
+    account->close();                                       // 잔액 문제 없는지 확인 후 초기화
+    if (tempBalance != 0)
     {
+        cout << "잔액이 있어 해지할 수 없습니다." << endl;
         return;
-    }
+    } // close()에서 잔액 남아서 초기화 못했다면 이 함수도 바로 종료
+
+    // pAcctArray를 돌면서 삭제할 객체 index 찾기
     int indexToDelete = -1;
     for (int i = 0; i < nCurrentAccountNum; i++)
-    { // pAcctArray에서 삭제할 객체 index 찾기
+    {
         if (&pAcctArray[i] == account)
         {
             indexToDelete = i;
@@ -161,14 +170,15 @@ void ATMachine::depositMoney()
     cout << "------  입금  ------" << endl;
     cout << "계좌번호 입력: ";
     cin >> tempId;
+    cin.ignore();
     cout << "비밀번호 입력: ";
-    cin >> tempPassword;
+    getline(cin, tempPassword);
     cout << "입금액   입력: ";
     cin >> money;
 
     if (money <= 0)
     {
-        cout << "정확한 입금액을 입력하세요.\n";
+        cout << "0원 이하의 금액은 입금할 수 없습니다.\n";
         return;
     }
 
@@ -192,14 +202,15 @@ void ATMachine::withdrawMoney()
     cout << "------  출금  ------" << endl;
     cout << "계좌번호 입력: ";
     cin >> tempId;
+    cin.ignore();
     cout << "비밀번호 입력: ";
-    cin >> tempPassword;
+    getline(cin, tempPassword);
     cout << "출금액   입력: ";
     cin >> money;
 
     if (money <= 0)
     {
-        cout << "정확한 출금액을 입력하세요\n";
+        cout << "0원 이하의 금액은 출금할 수 없습니다.\n";
         return;
     }
 
@@ -216,7 +227,7 @@ void ATMachine::withdrawMoney()
     }
 
     balance = account->withdraw(tempId, tempPassword, money);
-    if (balance == -1)
+    if (balance == -2) // withdraw에서 잔액 부족의 반환값 처리
     {
         cout << "계좌에 잔액이 부족합니다." << endl;
         return;
