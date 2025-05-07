@@ -72,3 +72,20 @@ int Account::withdraw(int id, string password, int money)
         return AUTHENTIFICATION_FAIL;
     }
 }
+
+bool Account::deposit(int id, int money)
+{
+    // id랑 money를 받았어. 정확한 객체 위치로 이미 받은거니까 여기선 단순히 money를 넣고 bool하기만 하면 됨.
+    nBalance += money;
+    return true;
+}
+
+bool Account::updatePasswd(string oldPasswd, string newPasswd)
+{
+    if (oldPasswd == strPassword)
+    {
+        strPassword = newPasswd;
+        return true;
+    }
+    return false;
+}

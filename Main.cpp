@@ -13,8 +13,15 @@ int main()
     while (1)
     {
         atm.displayMenu(); // ui 띄우기
-        cout << "메뉴를 선택하세요 (ex: 1, 2, ...) : ";
+        cout << "메뉴를 선택하세요 (ex: 1, 2, ..., 9) : ";
         cin >> select;
+        if (cin.fail())
+        {
+            cout << "\n잘못된 입력입니다." << endl;
+            cin.clear();
+            cin.ignore(5, '\n'); // 5개 문자 비우기. 경우에 따라 더 비울 수 있음
+            continue;
+        }
         cout << endl;
 
         switch (select)
@@ -33,6 +40,15 @@ int main()
             break;
         case 5:
             atm.withdrawMoney();
+            break;
+        case 6:
+            atm.transfer();
+            break;
+        case 7:
+            atm.requestSvc();
+            break;
+        case 8:
+            atm.managerMode();
             break;
         case 9:
             return 0; // main함수가 끝나며 선언했던 소멸자 호출됨

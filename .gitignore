@@ -1,0 +1,14 @@
+# Ignore object files
+*.o
+
+# Ignore executable (macOS/Linux)
+atm_program
+
+# Ignore executable (Windows)
+atm_program.exe
+
+# Ignore VS Code settings
+.vscode/
+
+# Ignore macOS system files
+.DS_Store

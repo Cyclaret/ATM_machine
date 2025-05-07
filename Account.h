@@ -28,7 +28,11 @@ public:
     int getAcctID() { return nID; }                               // 계좌 번호 읽어오기
     void close();
     int deposit(int id, string password, int money);
-    int withdraw(int id, string password, int money); // Renamed from widraw to withdraw
+    int withdraw(int id, string password, int money);
+    bool deposit(int id, int money);                       // 송금 계좌와 이체 금액을 paramaeter로 받음
+    bool updatePasswd(string oldPasswd, string newPasswd); // 비밀번호 실제 변경 logic
+    int getBalance() { return nBalance; }
+    string getAccountName() { return strAccountName; }
 };
 
 #endif
