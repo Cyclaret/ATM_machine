@@ -1,8 +1,10 @@
 #include <iostream>
 #include <random>
+#include <iomanip>
 using namespace std;
 
 #include "ATMachine.h"
+#include "Statistics.h"
 
 ATMachine::ATMachine(int size, int balance, string password)
 {
@@ -25,17 +27,21 @@ void ATMachine::displayMenu()
     cout << "----------------------\n"
          << "-    TUKOREA BANK    -\n"
          << "----------------------" << endl;
-    cout << " 1. 계좌 개설\n"
+    cout << "1. 계좌 개설\n"
          << "2. 계좌 조회\n"
          << "3. 계좌 해지\n"
          << "4. 계좌 입금\n"
          << "5. 계좌 출금\n"
+         << "6. 계좌 이체\n"
+         << "7. 고객 센터\n"
+         << "8. 고객 관리\n"
          << "9. 업무 종료" << endl;
 }
 
 void ATMachine::createAccount()
 {
     string name, password;
+    cin.ignore(); // 아래 getline이 사용자 입력으로 받는 Enter를 없애버리는 문제 해결
     // 개설된 계좌 수가 충분히 남아있으면, Account class의 create함수 호출 및 배열에 저장
     if (nCurrentAccountNum < nMaxAccountNum)
     {
@@ -241,4 +247,118 @@ void ATMachine::withdrawMoney()
 ATMachine::~ATMachine()
 {
     delete[] pAcctArray;
+}
+
+void ATMachine::transfer()
+{
+    int tempId, targetId, money;
+
+    string tempPassword;
+    cout << "------  이체  ------" << endl;
+    cout << "계좌번호 입력: ";
+    cin >> tempId;
+    cin.ignore();
+    cout << "비밀번호 입력: ";
+    getline(cin, tempPassword);
+
+    Account *account = findAndAuthAccount(tempId, tempPassword);
+    if (account == nullptr)
+    {
+        cout << "계좌번호 혹은 비밀번호가 맞지 않습니다." << endl;
+        return;
+    }
+    cout << "이체계좌 입력: ";
+    cin >> targetId;
+    cout << "이체금액 입력: ";
+    cin >> money;
+
+    if (money <= 0)
+    {
+        cout << "0원 이하의 금액은 이체할 수 없습니다." << endl;
+        return;
+    }
+
+    // 송금할 계좌 확인
+    Account *targetAccount = nullptr;
+
+    for (int i = 0; i < nCurrentAccountNum; i++)
+    {
+        if (pAcctArray[i].getAcctID() == targetId)
+        {
+            targetAccount = &pAcctArray[i];
+            break;
+        }
+    }
+
+    if (targetAccount == nullptr)
+    {
+        cout << "송금할 계좌는 존재하지 않는 계좌입니다." << endl;
+        return;
+    }
+    // 내 계좌보다 많은 돈을 빼내어 리턴하려면? withdraw에서 처리한다.
+    if (account->withdraw(tempId, tempPassword, money) == -2)
+    {
+        cout << "계좌에 잔액이 부족합니다." << endl;
+        return;
+    }
+
+    if (targetAccount->deposit(targetId, money))
+    {
+        cout << "현재 잔액 : " << account->check(tempId, tempPassword) << endl;
+        cout << "이체 완료" << endl;
+    }
+}
+
+void ATMachine::requestSvc()
+{
+    // CustomerSvc 객체 생성 후 그 멤버 함수 updatePasswdReq() 호출
+    CustomerSvc service(pAcctArray, nCurrentAccountNum);
+    service.updatePasswdReq();
+}
+
+bool ATMachine::isManager(string password)
+{
+    return (password == strManagerPassword) ? true : false;
+}
+
+void ATMachine::displayReport()
+{
+    cout << "----------------------\n"
+         << "ATM 현재 잔고:     " << nMachineBalance << "원\n"
+         << "고객 잔고 총액:     " << Statistics::sum(pAcctArray, nCurrentAccountNum) << "원(총" << nCurrentAccountNum << "명)\n"
+         << "고객 잔고 평균:     " << Statistics::average(pAcctArray, nCurrentAccountNum) << "원\n"
+         << "고객 잔고 최소:     " << Statistics::min(pAcctArray, nCurrentAccountNum) << "원\n"
+         << "고객 잔고 최고:     " << Statistics::max(pAcctArray, nCurrentAccountNum) << "원\n"
+         << "----------------------\n"
+         << "-  고객 계좌 목록  -\n"
+         << "----------------------" << endl;
+
+    Statistics::sort(pAcctArray, nCurrentAccountNum);
+    for (int i = 0; i < nCurrentAccountNum; i++)
+    {
+        cout << i + 1 << ". " << pAcctArray[i].getAccountName() << setw(7) << setfill(' ')
+             << pAcctArray[i].getAcctID() << "   " << pAcctArray[i].getBalance() << "원" << endl;
+    }
+    cout << endl;
+}
+
+void ATMachine::managerMode()
+{
+    string tempPassword;
+
+    cout << "------  관리  ------" << endl;
+    cout << "관리자 비밀번호 입력: ";
+    cin.ignore();
+    getline(cin, tempPassword);
+
+    if (isManager(tempPassword))
+    {
+        cout << "관리자입니다." << endl;
+    }
+    else
+    {
+        cout << "비밀번호가 일치하지 않습니다." << endl;
+        return;
+    }
+    displayReport();
 }

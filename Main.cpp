@@ -13,7 +13,7 @@ int main()
     while (1)
     {
         atm.displayMenu(); // ui 띄우기
-        cout << "메뉴를 선택하세요 (ex: 1, 2, ...) : ";
+        cout << "메뉴를 선택하세요 (ex: 1, 2, ..., 9) : ";
         cin >> select;
         cout << endl;
 
@@ -33,6 +33,15 @@ int main()
             break;
         case 5:
             atm.withdrawMoney();
+            break;
+        case 6:
+            atm.transfer();
+            break;
+        case 7:
+            atm.requestSvc();
+            break;
+        case 8:
+            atm.managerMode();
             break;
         case 9:
             return 0; // main함수가 끝나며 선언했던 소멸자 호출됨

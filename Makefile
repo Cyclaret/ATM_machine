@@ -1,19 +1,28 @@
+# Makefile for HH_ATM1 project
+
 CC = g++
-CFLAGS = -c
+CFLAGS = -std=c++11 -Wall -g
+SRC = main.cpp ATMachine.cpp Account.cpp CustomerSvc.cpp Statistics.cpp
+OBJ = $(SRC:.cpp=.o)
+EXEC = atm_program
 
-all: atm_program
+$(EXEC): $(OBJ)
+	$(CC) $(OBJ) -o $(EXEC)
 
-atm_program: Account.o ATMachine.o Main.o
-	$(CC) Account.o ATMachine.o Main.o -o atm_program
+main.o: main.cpp ATMachine.h Account.h CustomerSvc.h Statistics.h
+	$(CC) $(CFLAGS) -c main.cpp
+
+ATMachine.o: ATMachine.cpp ATMachine.h Account.h CustomerSvc.h Statistics.h
+	$(CC) $(CFLAGS) -c ATMachine.cpp
 
 Account.o: Account.cpp Account.h
-	$(CC) $(CFLAGS) Account.cpp -o Account.o
+	$(CC) $(CFLAGS) -c Account.cpp
 
-ATMachine.o: ATMachine.cpp ATMachine.h Account.h
-	$(CC) $(CFLAGS) ATMachine.cpp -o ATMachine.o
+CustomerSvc.o: CustomerSvc.cpp CustomerSvc.h Account.h
+	$(CC) $(CFLAGS) -c CustomerSvc.cpp
 
-Main.o: Main.cpp Account.h ATMachine.h
-	$(CC) $(CFLAGS) Main.cpp -o Main.o
+Statistics.o: Statistics.cpp Statistics.h Account.h ATMachine.h
+	$(CC) $(CFLAGS) -c Statistics.cpp
 
 clean:
-	rm -f *.o atm_program
+	rm -f $(OBJ) $(EXEC)
