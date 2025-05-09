@@ -8,11 +8,8 @@ EXEC = atm_program
 
 $(EXEC): $(OBJ)
 	$(CC) $(OBJ) -o $(EXEC)
-<<<<<<< HEAD
 	./$(EXEC)
 	rm -f main.o ATMachine.o Account.o CustomerSvc.o Statistics.o atm_program
-=======
->>>>>>> 33f01fb7c805b403b7ca3b569054f1c035041041
 
 main.o: main.cpp ATMachine.h Account.h CustomerSvc.h Statistics.h
 	$(CC) $(CFLAGS) -c main.cpp
@@ -30,8 +27,4 @@ Statistics.o: Statistics.cpp Statistics.h Account.h ATMachine.h
 	$(CC) $(CFLAGS) -c Statistics.cpp
 
 clean:
-<<<<<<< HEAD
 	rm -f main.o ATMachine.o Account.o CustomerSvc.o Statistics.o atm_program
-=======
-	rm -f $(OBJ) $(EXEC)
->>>>>>> 33f01fb7c805b403b7ca3b569054f1c035041041

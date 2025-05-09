@@ -261,11 +261,7 @@ void ATMachine::transfer()
     cout << "비밀번호 입력: ";
     getline(cin, tempPassword);
 
-<<<<<<< HEAD
     Account *account = findAndAuthAccount(tempId, tempPassword); // 계좌번호와 비밀번호를 받아 배열에서 정확환 위치 반환
-=======
-    Account *account = findAndAuthAccount(tempId, tempPassword);
->>>>>>> 33f01fb7c805b403b7ca3b569054f1c035041041
     if (account == nullptr)
     {
         cout << "계좌번호 혹은 비밀번호가 맞지 않습니다." << endl;
@@ -282,11 +278,7 @@ void ATMachine::transfer()
         return;
     }
 
-<<<<<<< HEAD
     // 송금할 계좌 확인 : targetAccount에 송금할 계좌의 위치 저장
-=======
-    // 송금할 계좌 확인
->>>>>>> 33f01fb7c805b403b7ca3b569054f1c035041041
     Account *targetAccount = nullptr;
 
     for (int i = 0; i < nCurrentAccountNum; i++)
@@ -303,12 +295,8 @@ void ATMachine::transfer()
         cout << "송금할 계좌는 존재하지 않는 계좌입니다." << endl;
         return;
     }
-<<<<<<< HEAD
 
     // 자신의 계좌에 잔액이 부족한 경우 withdraw()의 리턴값이 -2다.
-=======
-    // 내 계좌보다 많은 돈을 빼내어 리턴하려면? withdraw에서 처리한다.
->>>>>>> 33f01fb7c805b403b7ca3b569054f1c035041041
     if (account->withdraw(tempId, tempPassword, money) == -2)
     {
         cout << "계좌에 잔액이 부족합니다." << endl;
@@ -335,11 +323,7 @@ bool ATMachine::isManager(string password)
 }
 
 void ATMachine::displayReport()
-<<<<<<< HEAD
 { // 통계 display 출력
-=======
-{
->>>>>>> 33f01fb7c805b403b7ca3b569054f1c035041041
     cout << "----------------------\n"
          << "ATM 현재 잔고:     " << nMachineBalance << "원\n"
          << "고객 잔고 총액:     " << Statistics::sum(pAcctArray, nCurrentAccountNum) << "원(총" << nCurrentAccountNum << "명)\n"
@@ -352,11 +336,7 @@ void ATMachine::displayReport()
 
     Statistics::sort(pAcctArray, nCurrentAccountNum);
     for (int i = 0; i < nCurrentAccountNum; i++)
-<<<<<<< HEAD
     { // setw, setfill은 문자열 formatting 관련 가독성 함수.
-=======
-    {
->>>>>>> 33f01fb7c805b403b7ca3b569054f1c035041041
         cout << i + 1 << ". " << pAcctArray[i].getAccountName() << setw(7) << setfill(' ')
              << pAcctArray[i].getAcctID() << "   " << pAcctArray[i].getBalance() << "원" << endl;
     }

@@ -37,11 +37,8 @@ void CustomerSvc::updatePasswdReq()
         cout<<"존재하지 않는 계좌입니다."<<endl;
         return;
     }
-<<<<<<< HEAD
 
     // pAcctArray에서 정확한 위치를 찾고, 비밀번호를 수정하는 Account 클래스의 updatePasswd 함수 호출
-=======
->>>>>>> 33f01fb7c805b403b7ca3b569054f1c035041041
     if (account->updatePasswd(oldPasswd, newPasswd)) {
         cout<<"비밀번호를 수정하였습니다."<<endl;
     }
