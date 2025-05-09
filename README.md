@@ -1,8 +1,8 @@
 # ATM Program (C++)
 
 ## 📌 소개
-간단한 ATM 시뮬레이션 프로그램입니다.  
-계좌 생성, 입금, 출금, 해지 등 기본 기능을 구현하였습니다.
+ATM 시뮬레이션 프로그램입니다.  
+계좌 생성, 입금, 출금, 해지 등 기본 기능 + 추가기능을 구현하였습니다.
 
 ---
 
@@ -24,8 +24,7 @@
 ### 🖥️ macOS / Linux 사용자의 경우 (Visaul Studio Code)
 
 ```bash
-make          # 컴파일
-./atm_program # 실행
+make          # 컴파일 및 실행
 ```
 
 ### 🪟 Windows 사용자의 경우 (Visual Studio)
